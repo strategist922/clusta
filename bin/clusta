@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+$: << File.expand_path('../lib', File.dirname(__FILE__)) unless $:.include?(File.expand_path('../lib', File.dirname(__FILE__)))
+
+require 'clusta'
+
+def usage
+  "usage: #{File.basename(__FILE__)} --transform=TRANSFORM_NAME [ARGS ...]"
+end
+
+def extract_transform_arg!
+  transform_arg = ARGV.find_all { |arg| arg =~ Clusta::Transforms::ARG_REGEXP }.first
+  if transform_arg.nil?
+    $stderr.puts(usage)
+    exit(1)
+  end
+  # ARGV.delete_if { |arg| arg =~ Clusta::Transforms::ARG_REGEXP }
+  transform_arg
+end
+
+if $0 == __FILE__
+  begin
+    transform = Clusta::Transforms.from_arg(extract_transform_arg!)
+    Wukong::Script.new(transform::Mapper, (defined?(transform::Reducer) ? transform::Reducer : nil)).run
+  rescue Clusta::Error => e
+    puts e.message
+    exit(1)
+  end
+end
