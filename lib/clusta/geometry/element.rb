@@ -16,8 +16,17 @@ module Clusta
       def self.field_names
         @fields.map { |field| field[:name].to_s }
       end
+
+      def self.has_optional_field?
+        @fields.any? { |field| field[:optional] }
+      end
+
+      def self.optional_field
+        @fields.detect { |field| field[:optional] }
+      end
       
       def self.field name, options={}
+        raise AmbiguousArgumentsError.new("Cannot define a second optional field #{name} because field #{optional_field[:name]} is already optional.") if has_optional_field?
         attr_reader name
         case options[:type]
         when :int
@@ -59,12 +68,11 @@ module Clusta
       def initialize *args
         self.class.fields.each_with_index do |field, index|
           suffix = case index.to_s
-                   when /1$/ then 'st'
-                   when /2$/ then 'nd'
-                   when /3$/ then 'rd'
-                   else 'th'
-                   end
-          
+            when /1$/ then 'st'
+            when /2$/ then 'nd'
+            when /3$/ then 'rd'
+            else 'th'
+            end
           case
           when field[:optional]
             self.send("#{field[:name]}=", args[index]) if args[index]
@@ -74,7 +82,7 @@ module Clusta
             self.send("#{field[:name]}=", args[index])
           end
         end
-        self.set_input_fields(*(args[(self.class.fields.size + 1)..-1] || []))
+        self.set_input_fields(*(args[self.class.fields.size..-1] || []))
       end
 
       def set_input_fields *input_fields

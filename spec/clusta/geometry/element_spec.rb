@@ -30,6 +30,12 @@ describe Clusta::Geometry::Element do
       wrapper2.field_names.should include('foo')
       wrapper2.field_names.should include('bar')
     end
+
+    it "should not allow for more than one optional field" do
+      wrapper = Class.new(Clusta::Geometry::Element)
+      wrapper.field :foo, :optional => true
+      lambda { wrapper.field :bar, :optional => true }.should raise_error
+    end
     
   end
 
@@ -78,6 +84,63 @@ describe Clusta::Geometry::Element do
     end
     
   end
+
+  describe "dealing with fields beyond those declared" do
+
+    it "should accept additional fields by default" do
+      instance = Clusta::Geometry::Element.new("foo", "bar", "baz")
+      instance.input_fields.should include("foo", "bar", "baz")
+    end
+
+    it "should serialize additional fields properly" do
+      instance = Clusta::Geometry::Element.new("foo", "bar", "baz")
+      instance.to_flat.should include("foo", "bar", "baz")
+    end
+    
+    it "should accept additional fields on a subclass" do
+      wrapper = Class.new(Clusta::Geometry::Element)
+      wrapper.field :foo
+      instance = wrapper.new("foovalue", "bar", "baz")
+      instance.foo.should == "foovalue"
+      instance.input_fields.should include("bar", "baz")
+    end
+
+    it "should serialize additional fields on a subclass properly" do
+      wrapper = Class.new(Clusta::Geometry::Element)
+      wrapper.field :foo
+      instance = wrapper.new("foovalue", "bar", "baz")
+      instance.to_flat.should include("foovalue", "bar", "baz")
+    end
+
+    it "should allow a subclass to alias input_fields" do
+      wrapper = Class.new(Clusta::Geometry::Element)
+      wrapper.field :foo
+      wrapper.input_fields :bar
+      instance = wrapper.new("foovalue", "bar", "baz")
+      instance.foo.should == "foovalue"
+      instance.bar.should == instance.input_fields
+    end
+
+    it "should behave sensibly with both an optional field and input fields" do
+      wrapper = Class.new(Clusta::Geometry::Element)
+      wrapper.field :foo
+      wrapper.field :bar, :optional => true
+      
+      instance = wrapper.new("foovalue", "barvalue", "extra1", "extra2")
+      instance.foo.should == 'foovalue'
+      instance.bar.should == 'barvalue'
+      instance.input_fields.should == ['extra1', 'extra2']
+
+      instance = wrapper.new("foovalue")
+      instance.foo.should == 'foovalue'
+      instance.bar.should be_nil
+      instance.input_fields.should be_empty
+      
+    end
+    
+  end
+  
+  
 
 end
 
