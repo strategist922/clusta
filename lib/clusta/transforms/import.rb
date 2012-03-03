@@ -7,7 +7,7 @@ module Clusta
       class Mapper < Wukong::Streamer::Base
 
         def process *record
-          emit record.unshift(Settings[:class])
+          emit record.unshift(Settings[:as])
         end
       end
       

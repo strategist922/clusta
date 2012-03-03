@@ -1,8 +1,9 @@
-1	1	1
-2	1	1
-4	1	1
-5	2	1
-6	1	1
-7	1	2
-8	1	2
-9	1	0
+DirectedDegree	1	1	1
+DirectedDegree	2	2	0
+DirectedDegree	3	0	1
+DirectedDegree	4	1	1
+DirectedDegree	5	2	2
+DirectedDegree	6	1	1
+DirectedDegree	7	1	2
+DirectedDegree	8	1	2
+DirectedDegree	9	1	0

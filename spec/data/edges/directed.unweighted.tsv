@@ -1,0 +1,10 @@
+DirectedEdge	1	2
+DirectedEdge	3	2
+DirectedEdge	4	1
+DirectedEdge	5	4
+DirectedEdge	6	5
+DirectedEdge	5	7
+DirectedEdge	7	5
+DirectedEdge	8	6
+DirectedEdge	7	8
+DirectedEdge	8	9

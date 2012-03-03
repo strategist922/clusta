@@ -15,6 +15,22 @@ describe Clusta::Geometry::Element do
       wrapper.field_names.should include('foo')
     end
 
+    it "should allow a subclass of a subclass to set its own fields without polluting the parent" do
+      wrapper1 = Class.new(Clusta::Geometry::Element)
+      wrapper1.field :foo
+      wrapper2 = Class.new(wrapper1)
+      wrapper2.field :bar
+      
+      Clusta::Geometry::Element.field_names.should_not include('foo')
+      Clusta::Geometry::Element.field_names.should_not include('bar')
+      
+      wrapper1.field_names.should include('foo')
+      wrapper1.field_names.should_not include('bar')
+
+      wrapper2.field_names.should include('foo')
+      wrapper2.field_names.should include('bar')
+    end
+    
   end
 
   describe "initializing" do

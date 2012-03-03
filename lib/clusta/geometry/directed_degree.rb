@@ -1,7 +1,7 @@
 module Clusta
   module Geometry
     
-    class DirectedDegree < Degree
+    class DirectedDegree < Element
 
       field :vertex_label
       field :in_degree,   :type => :int

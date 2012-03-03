@@ -9,7 +9,7 @@ module Clusta
       class << self ; attr_reader :fields ; end
 
       def self.inherited(subclass)
-        subclass.instance_variable_set("@fields", (superclass.instance_variable_get("@fields") || []).dup)
+        subclass.instance_variable_set("@fields", @fields.dup)
         super
       end
 
