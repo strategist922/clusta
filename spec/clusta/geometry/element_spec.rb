@@ -36,7 +36,6 @@ describe Clusta::Geometry::Element do
       wrapper.field :foo, :optional => true
       lambda { wrapper.field :bar, :optional => true }.should raise_error
     end
-    
   end
 
   describe "initializing" do
@@ -137,10 +136,56 @@ describe Clusta::Geometry::Element do
       instance.input_fields.should be_empty
       
     end
+  end
+
+  describe "embedded geometry elements" do
+
+    it "should be able to instantiate embedded elements when named as fields" do
+      parent = Class.new(Clusta::Geometry::Element)
+      
+      parent.field :foo
+      parent.field :child, :type => :geometry
+      
+      instance = parent.new("foovalue", "Edge;1;2")
+      instance.foo.should == 'foovalue'
+      instance.child.source_label.should == '1'
+      instance.child.target_label.should == '2'
+    end
+
+    it "should be able to serialize embedded elements when named as fields" do
+      parent = Class.new(Clusta::Geometry::Element)
+      
+      parent.field :foo
+      parent.field :child, :type => :geometry
+
+      instance = parent.new('foovalue', Clusta::Geometry::Edge.new('1', '2'))
+      instance.to_flat.should include('foovalue', 'Edge;1;2')
+    end
+
+    it "should be able to instantiate embedded elements when given as input fields" do
+      parent = Class.new(Clusta::Geometry::Element)
+      
+      parent.field :foo
+      instance = parent.new("foovalue", "Edge;1;2", "Edge;3;4")
+      
+      instance.foo.should == 'foovalue'
+      
+      instance.input_fields.size.should == 2
+      instance.input_fields[0].source_label.should == '1'
+      instance.input_fields[0].target_label.should == '2'
+      instance.input_fields[1].source_label.should == '3'
+      instance.input_fields[1].target_label.should == '4'
+    end
+
+    it "should be able to serialize embedded elements when given as input fields" do
+      parent = Class.new(Clusta::Geometry::Element)
+      
+      parent.field :foo
+      instance = parent.new('foovalue', Clusta::Geometry::Edge.new('1','2'), Clusta::Geometry::Edge.new('3','4'))
+      instance.to_flat.should include('foovalue', 'Edge;1;2')
+    end
     
   end
-  
-  
 
 end
 

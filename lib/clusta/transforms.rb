@@ -1,5 +1,3 @@
-require 'wukong'
-
 module Clusta
 
   module Transforms
@@ -10,9 +8,13 @@ module Clusta
       end
     end
 
-    autoload :Import,             'clusta/transforms/import'
-    autoload :EdgesToDegrees,     'clusta/transforms/edges_to_degrees'
-    autoload :EdgesToVertexEdges, 'clusta/transforms/edges_to_vertex_edges'
+    def self.register_transform name, path
+      autoload name, path
+    end
+
+    register_transform :Import,              'clusta/transforms/import'
+    register_transform :EdgesToDegrees,      'clusta/transforms/edges_to_degrees'
+    register_transform :EdgesToVertexArrows, 'clusta/transforms/edges_to_vertex_arrows'
     
     ARG_REGEXP = /--transform=[\w\d_]+/
 

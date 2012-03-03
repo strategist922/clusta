@@ -24,6 +24,14 @@ module Clusta
       def self.optional_field
         @fields.detect { |field| field[:optional] }
       end
+
+      def self.from_string string
+        return string unless string.is_a?(String)
+        args  = string.split(';')
+        klass_name = args.shift
+        raise ArgumentError.new("Elements instantiated from a string must match the format 'klass;[field1;[field2;]...]'") unless klass_name
+        Wukong.class_from_resource(klass_name).new(*args)
+      end
       
       def self.field name, options={}
         raise AmbiguousArgumentsError.new("Cannot define a second optional field #{name} because field #{optional_field[:name]} is already optional.") if has_optional_field?
@@ -36,6 +44,10 @@ module Clusta
         when :float
           define_method "#{name}=" do |val|
             instance_variable_set("@#{name}", val.to_f)
+          end
+        when :geometry
+          define_method "#{name}=" do |val|
+            instance_variable_set("@#{name}", self.class.from_string(val))
           end
         else
           define_method "#{name}=" do |val|
@@ -86,11 +98,17 @@ module Clusta
       end
 
       def set_input_fields *input_fields
-        self.input_fields = input_fields
+        self.input_fields = input_fields.map do |field|
+          if field =~ /^[A-Z].*;/
+            self.class.from_string(field)
+          else
+            field
+          end
+        end
       end
 
       def output_fields
-        input_fields
+        input_fields.map(&:to_s)
       end
 
       def to_flat
@@ -101,8 +119,13 @@ module Clusta
           end
         end.concat(output_fields)
       end
+
+      def to_s
+        to_flat.join(';')
+      end
+      
     end
-    
+
   end
 end
 

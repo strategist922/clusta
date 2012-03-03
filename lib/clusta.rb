@@ -1,3 +1,5 @@
+require 'wukong'
+
 module Clusta
   
   Error                     = Class.new(StandardError)

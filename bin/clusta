@@ -8,7 +8,7 @@ def usage
   "usage: #{File.basename(__FILE__)} --transform=TRANSFORM_NAME [ARGS ...]"
 end
 
-def extract_transform_arg!
+def extract_transform_arg
   transform_arg = ARGV.find_all { |arg| arg =~ Clusta::Transforms::ARG_REGEXP }.first
   if transform_arg.nil?
     $stderr.puts(usage)
@@ -18,9 +18,14 @@ def extract_transform_arg!
   transform_arg
 end
 
+def add_default_run_arg
+  ARGV.unshift('--run=local') unless ARGV.detect { |arg| arg =~ /--run/ }
+end
+
 if $0 == __FILE__
   begin
-    transform = Clusta::Transforms.from_arg(extract_transform_arg!)
+    add_default_run_arg
+    transform = Clusta::Transforms.from_arg(extract_transform_arg)
     Wukong::Script.new(transform::Mapper, (defined?(transform::Reducer) ? transform::Reducer : nil)).run
   rescue Clusta::Error => e
     puts e.message

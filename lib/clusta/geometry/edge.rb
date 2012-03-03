@@ -51,6 +51,14 @@ module Clusta
           self.class.new(target_label, source_label)
         end
       end
+
+      def arrow
+        if weighted?
+          Arrow.new(target_label, weight)
+        else
+          Arrow.new(target_label)
+        end
+      end
       
     end
     

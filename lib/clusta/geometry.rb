@@ -16,7 +16,8 @@ module Clusta
     register_geometry :DirectedEdge,   'clusta/geometry/directed_edge'
     register_geometry :Degree,         'clusta/geometry/degree'
     register_geometry :DirectedDegree, 'clusta/geometry/directed_degree'
-    register_geometry :VertexEdges,    'clusta/geometry/vertex_edges'
+    register_geometry :VertexArrows,   'clusta/geometry/vertex_arrows'
+    register_geometry :Arrow,          'clusta/geometry/arrow'
 
   end
 end

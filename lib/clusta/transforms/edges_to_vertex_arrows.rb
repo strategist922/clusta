@@ -2,20 +2,20 @@ module Clusta
 
   module Transforms
 
-    module EdgesToVertexEdges
+    module EdgesToVertexArrows
 
       class Mapper < Wukong::Streamer::StructStreamer
 
         def process edge, *record
           emit edge
-          emit edge.reversed
+          emit edge.reversed unless edge.directed?
         end
         
       end
 
       class Reducer < Wukong::Streamer::AccumulatingReducer
 
-        attr_accessor :edges
+        attr_accessor :arrows
         
         include Wukong::Streamer::StructRecordizer
 
@@ -26,15 +26,15 @@ module Clusta
         end
 
         def start! new_edge, *record
-          self.edges  = [new_edge]
+          self.arrows  = []
         end
 
         def accumulate new_edge, *record
-          self.edges << new_edge
+          self.arrows << new_edge.arrow
         end
 
         def finalize &block
-          emit Geometry::VertexEdges.from_label_and_edges(vertex_label, *edges)
+          emit Geometry::VertexArrows.new(vertex_label, *arrows)
         end
         
       end
