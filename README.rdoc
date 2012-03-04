@@ -1,3 +1,66 @@
 = Clusta
 
-Clusta is a Ruby gem.
+Clusta is a Ruby gem for network analysis built on top of
+Wukong[http://github.com/mrflip/wukong].
+
+Wukong lets you write Ruby scripts that run on your laptop as well as
+on a Hadoop cluster.
+
+Clusta is:
+
+- classes that make describing the geometry of networks easy
+- network algorithms written with these classes to use Wukong
+- a shim command-line program for running these algorithms
+
+Start with a file containing edges:
+
+  Edge	1	2
+  Edge	2	3
+  Edge	1	4
+  Edge	4	5
+  Edge	5	6
+  Edge	5	7
+  Edge	6	8
+  Edge	7	8
+  Edge	8	9
+
+Run this through a transformation named +edges_to_degrees+:
+
+  $ clusta --transform=edges_to_degrees /local/edges.tsv -
+  Degree	1	2
+  Degree	2	2
+  Degree	3	1
+  Degree	4	2
+  Degree	5	3
+  Degree	6	2
+  Degree	7	2
+  Degree	8	3
+  Degree	9	1
+
+Chain transformations together:
+
+  $ clusta --transform=edges_to_vertex_arrows /local/edges.tsv - | clusta --transform=vertex_arrows_to_edge_degree_pairs - - | clusta --transform=edge_degree_pairs_to_assortativities - -
+  Assortativity	1	2	1
+  Assortativity	1	3	1
+  Assortativity	2	1	1
+  Assortativity	2	2	4
+  Assortativity	2	3	5
+  Assortativity	3	1	1
+  Assortativity	3	2	5
+
+And then leverage Wukong when you're ready:
+
+  $ clusta --run=hadoop --transform=edges_to_vertex_arrows /hdfs/edges.tsv /hdfs/vertex_arrows.tsv
+  I, [2012-03-03T21:00:39.992750 #25835]  INFO -- :   Launching hadoop!
+  I, [2012-03-03T21:00:39.992979 #25835]  INFO -- : Running
+
+  /usr/lib/hadoop/bin/hadoop 	\
+    jar /usr/lib/hadoop/contrib/streaming/hadoop-*streaming*.jar 	\
+    -D mapred.job.name='clusta---spec/data/edges/undirected.unweighted.tsv----' 	\
+    -mapper  '/usr/bin/ruby1.9.1 clusta --map --log_interval=10000 --log_seconds=30 --transform=edges_to_degrees' 	\
+    -reducer '/usr/bin/ruby1.9.1 clusta --reduce --log_interval=10000 --log_seconds=30 --transform=edges_to_degrees' 	\
+    -input   'spec/data/edges/undirected.unweighted.tsv' 	\
+    -output  '-' 	\
+    -file    '/home/user/projects/networks/clusta/bin/clusta'
+  ...
+
