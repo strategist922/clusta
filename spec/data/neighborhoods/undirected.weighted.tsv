@@ -1,0 +1,9 @@
+Neighborhood	1	Neighbor;2;0.5	Neighbor;4;0.8
+Neighborhood	2	Neighbor;1;0.5	Neighbor;3;0.1
+Neighborhood	3	Neighbor;2;0.1
+Neighborhood	4	Neighbor;1;0.8	Neighbor;5;0.9
+Neighborhood	5	Neighbor;4;0.9	Neighbor;6;0.4	Neighbor;7;0.3
+Neighborhood	6	Neighbor;5;0.4	Neighbor;8;0.7
+Neighborhood	7	Neighbor;5;0.3	Neighbor;8;0.0
+Neighborhood	8	Neighbor;6;0.7	Neighbor;7;0.0	Neighbor;9;1.0
+Neighborhood	9	Neighbor;8;1.0

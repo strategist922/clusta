@@ -1,7 +1,7 @@
 module Clusta
   module Geometry
 
-    class DirectedEdgeDegreePair < Element
+    class DirectedDegreePair < Element
       field :source_label
       field :target_label
       field :source_in_degree_value,  :type => :int

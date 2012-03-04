@@ -1,8 +1,8 @@
 module Clusta
   module Geometry
 
-    class Arrow < Element
-      field :target_label
+    class Neighbor < Element
+      field :label
       field :weight, :optional => true
 
       def directed?
@@ -13,4 +13,3 @@ module Clusta
     
   end
 end
-

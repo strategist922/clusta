@@ -1,0 +1,7 @@
+DirectedNeighborhood	1	DirectedNeighbor;2;0.5
+DirectedNeighborhood	3	DirectedNeighbor;2;0.1
+DirectedNeighborhood	4	DirectedNeighbor;1;0.8
+DirectedNeighborhood	5	DirectedNeighbor;4;0.9	DirectedNeighbor;7;0.2
+DirectedNeighborhood	6	DirectedNeighbor;5;0.4
+DirectedNeighborhood	7	DirectedNeighbor;5;0.3	DirectedNeighbor;8;0.0
+DirectedNeighborhood	8	DirectedNeighbor;6;0.7	DirectedNeighbor;9;1.0

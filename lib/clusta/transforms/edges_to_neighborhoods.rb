@@ -2,7 +2,7 @@ module Clusta
 
   module Transforms
 
-    module EdgesToVertexArrows
+    module EdgesToNeighborhoods
 
       class Mapper < Wukong::Streamer::StructStreamer
 
@@ -15,7 +15,7 @@ module Clusta
 
       class Reducer < Wukong::Streamer::AccumulatingReducer
 
-        attr_accessor :arrows, :directed
+        attr_accessor :neighbors, :directed
         
         include Wukong::Streamer::StructRecordizer
 
@@ -26,19 +26,19 @@ module Clusta
         end
 
         def start! new_edge, *record
-          self.arrows   = []
+          self.neighbors   = []
           self.directed = new_edge.directed?
         end
 
         def accumulate new_edge, *record
-          self.arrows << new_edge.arrow
+          self.neighbors << new_edge.neighbor
         end
 
         def finalize &block
           if directed
-            emit Geometry::DirectedVertexArrows.new(vertex_label, *arrows)
+            emit Geometry::DirectedNeighborhood.new(vertex_label, *neighbors)
           else
-            emit Geometry::VertexArrows.new(vertex_label, *arrows)
+            emit Geometry::Neighborhood.new(vertex_label, *neighbors)
           end
         end
         

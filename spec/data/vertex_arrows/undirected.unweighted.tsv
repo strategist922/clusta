@@ -1,9 +1,0 @@
-VertexArrows	1	Arrow;2	Arrow;4
-VertexArrows	2	Arrow;1	Arrow;3
-VertexArrows	3	Arrow;2
-VertexArrows	4	Arrow;1	Arrow;5
-VertexArrows	5	Arrow;4	Arrow;6	Arrow;7
-VertexArrows	6	Arrow;5	Arrow;8
-VertexArrows	7	Arrow;5	Arrow;8
-VertexArrows	8	Arrow;6	Arrow;7	Arrow;9
-VertexArrows	9	Arrow;8

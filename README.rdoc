@@ -39,7 +39,7 @@ Run this through a transformation named +edges_to_degrees+:
 
 Chain transformations together:
 
-  $ clusta --transform=edges_to_vertex_arrows /local/edges.tsv - | clusta --transform=vertex_arrows_to_edge_degree_pairs - - | clusta --transform=edge_degree_pairs_to_assortativities - -
+  $ clusta --transform=edges_to_neighborhoods /local/edges.tsv - | clusta --transform=neighborhoods_to_degree_pairs - - | clusta --transform=degree_pairs_to_assortativities - -
   Assortativity	1	2	1
   Assortativity	1	3	1
   Assortativity	2	1	1
@@ -50,7 +50,7 @@ Chain transformations together:
 
 And then leverage Wukong when you're ready:
 
-  $ clusta --run=hadoop --transform=edges_to_vertex_arrows /hdfs/edges.tsv /hdfs/vertex_arrows.tsv
+  $ clusta --run=hadoop --transform=edges_to_neighborhoods /hdfs/edges.tsv /hdfs/neighborhoods.tsv
   I, [2012-03-03T21:00:39.992750 #25835]  INFO -- :   Launching hadoop!
   I, [2012-03-03T21:00:39.992979 #25835]  INFO -- : Running
 

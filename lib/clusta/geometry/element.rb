@@ -5,6 +5,19 @@ module Clusta
       
       attr_accessor :input_fields
 
+      def self.from_string string
+        return string unless string.is_a?(String)
+        args  = string.split(';')
+        klass_name = args.shift
+        raise ArgumentError.new("Elements instantiated from a string must match the format 'klass;[field1;[field2;]...]'") unless klass_name
+        Wukong.class_from_resource(klass_name).new(*args)
+      end
+      
+      #
+      # Set up a class inheritable array of fields, along with setters
+      # and methods to query field structure.
+      #
+
       @fields = []
       class << self ; attr_reader :fields ; end
 
@@ -25,14 +38,6 @@ module Clusta
         @fields.detect { |field| field[:optional] }
       end
 
-      def self.from_string string
-        return string unless string.is_a?(String)
-        args  = string.split(';')
-        klass_name = args.shift
-        raise ArgumentError.new("Elements instantiated from a string must match the format 'klass;[field1;[field2;]...]'") unless klass_name
-        Wukong.class_from_resource(klass_name).new(*args)
-      end
-      
       def self.field name, options={}
         raise AmbiguousArgumentsError.new("Cannot define a second optional field #{name} because field #{optional_field[:name]} is already optional.") if has_optional_field?
         attr_reader name
@@ -60,6 +65,10 @@ module Clusta
       def fields
         self.class.fields
       end
+
+      #
+      # Deal with additional fields 
+      #
 
       def self.input_fields name
         alias_method name, :input_fields

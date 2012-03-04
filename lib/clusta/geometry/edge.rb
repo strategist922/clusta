@@ -48,8 +48,8 @@ module Clusta
         self.class.new(target_label, source_label, weight)
       end
 
-      def arrow
-        Arrow.new(target_label, weight)
+      def neighbor
+        Neighbor.new(target_label, weight)
       end
       
     end

@@ -10,3 +10,11 @@ desc "Release clusta-#{version}"
 task :release => :build do
   system "gem push clusta-#{version}.gem"
 end
+
+desc "Build tags."
+task :tags do
+  files   = Dir["**/*.rb"]
+  command =  "etags -e --language-force=ruby Rakefile #{files.join(' ')}"
+  puts command
+  system(command)
+end

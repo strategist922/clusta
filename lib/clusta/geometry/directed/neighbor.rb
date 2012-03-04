@@ -1,7 +1,7 @@
 module Clusta
   module Geometry
 
-    class DirectedArrow < Arrow
+    class DirectedNeighbor < Neighbor
       def directed
         true
       end

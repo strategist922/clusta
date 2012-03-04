@@ -2,12 +2,12 @@ module Clusta
 
   module Transforms
 
-    module EdgeDegreePairsToAssortativities
+    module DegreePairsToAssortativities
 
       class Mapper < Wukong::Streamer::StructStreamer
 
-        def process edge_degree_pair, *record
-          emit edge_degree_pair.assortativity
+        def process degree_pair, *record
+          emit degree_pair.assortativity
         end
         
       end
