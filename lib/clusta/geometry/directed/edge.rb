@@ -15,6 +15,11 @@ module Clusta
         DirectedDegree.new(target_label, 1, 0)
       end
 
+      def arrow
+        DirectedArrow.new(target_label, weight)
+      end
+      
+
     end
     
   end

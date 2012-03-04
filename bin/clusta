@@ -26,9 +26,10 @@ if $0 == __FILE__
   begin
     add_default_run_arg
     transform = Clusta::Transforms.from_arg(extract_transform_arg)
-    Wukong::Script.new(transform::Mapper, (defined?(transform::Reducer) ? transform::Reducer : nil)).run
+    script    = Clusta::Transforms.script_for(transform)
+    script.run
   rescue Clusta::Error => e
-    puts e.message
+    $stderr.puts e.message
     exit(1)
   end
 end

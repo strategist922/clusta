@@ -11,13 +11,15 @@ module Clusta
       self::ELEMENTS << name
     end
 
-    register_geometry :Vertex,         'clusta/geometry/vertex'
-    register_geometry :Edge,           'clusta/geometry/edge'
-    register_geometry :DirectedEdge,   'clusta/geometry/directed_edge'
-    register_geometry :Degree,         'clusta/geometry/degree'
-    register_geometry :DirectedDegree, 'clusta/geometry/directed_degree'
-    register_geometry :VertexArrows,   'clusta/geometry/vertex_arrows'
-    register_geometry :Arrow,          'clusta/geometry/arrow'
+    Dir[File.join(File.dirname(__FILE__), "geometry/*.rb")].each do |path|
+      require_name = Clusta.require_name(path)
+      register_geometry Clusta.classify(require_name), "clusta/geometry/#{require_name}"
+    end
+
+    Dir[File.join(File.dirname(__FILE__), "geometry/directed/*.rb")].each do |path|
+      require_name = Clusta.require_name(path)
+      register_geometry ("Directed" + Clusta.classify(require_name)), "clusta/geometry/directed/#{require_name}"
+    end
 
   end
 end

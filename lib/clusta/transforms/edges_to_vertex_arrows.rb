@@ -15,7 +15,7 @@ module Clusta
 
       class Reducer < Wukong::Streamer::AccumulatingReducer
 
-        attr_accessor :arrows
+        attr_accessor :arrows, :directed
         
         include Wukong::Streamer::StructRecordizer
 
@@ -26,7 +26,8 @@ module Clusta
         end
 
         def start! new_edge, *record
-          self.arrows  = []
+          self.arrows   = []
+          self.directed = new_edge.directed?
         end
 
         def accumulate new_edge, *record
@@ -34,7 +35,11 @@ module Clusta
         end
 
         def finalize &block
-          emit Geometry::VertexArrows.new(vertex_label, *arrows)
+          if directed
+            emit Geometry::DirectedVertexArrows.new(vertex_label, *arrows)
+          else
+            emit Geometry::VertexArrows.new(vertex_label, *arrows)
+          end
         end
         
       end

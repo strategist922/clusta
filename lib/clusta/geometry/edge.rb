@@ -45,19 +45,11 @@ module Clusta
       end
 
       def reversed
-        if weighted?
-          self.class.new(target_label, source_label, weight)
-        else
-          self.class.new(target_label, source_label)
-        end
+        self.class.new(target_label, source_label, weight)
       end
 
       def arrow
-        if weighted?
-          Arrow.new(target_label, weight)
-        else
-          Arrow.new(target_label)
-        end
+        Arrow.new(target_label, weight)
       end
       
     end

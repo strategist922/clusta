@@ -1,7 +1,7 @@
-VertexArrows	1	Arrow;2
-VertexArrows	3	Arrow;2
-VertexArrows	4	Arrow;1
-VertexArrows	5	Arrow;4	Arrow;7
-VertexArrows	6	Arrow;5
-VertexArrows	7	Arrow;5	Arrow;8
-VertexArrows	8	Arrow;6	Arrow;9
+DirectedVertexArrows	1	DirectedArrow;2
+DirectedVertexArrows	3	DirectedArrow;2
+DirectedVertexArrows	4	DirectedArrow;1
+DirectedVertexArrows	5	DirectedArrow;4	DirectedArrow;7
+DirectedVertexArrows	6	DirectedArrow;5
+DirectedVertexArrows	7	DirectedArrow;5	DirectedArrow;8
+DirectedVertexArrows	8	DirectedArrow;6	DirectedArrow;9

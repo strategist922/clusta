@@ -1,25 +1,20 @@
 module Clusta
   module Geometry
 
-    class EdgeDegrees < Edge
-
+    class EdgeDegreePair < Element
       field :source_label
       field :target_label
       field :source_degree_value, :type => :int
       field :target_degree_value, :type => :int
 
-      def weighted?
+      def directed?
         false
       end
 
-      def source_degree
-        Degree.new(
+      def assortativity
+        Assortativity.new(source_degree_value, target_degree_value, 1)
       end
 
-      def target_degree
-        
-      end
-      
     end
     
   end
