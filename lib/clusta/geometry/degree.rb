@@ -3,6 +3,8 @@ module Clusta
     
     class Degree < Element
 
+      abbreviate 'D'
+
       field :vertex_label
       field :degree, :type => :int
       

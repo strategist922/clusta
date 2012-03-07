@@ -1,3 +1,10 @@
+require 'clusta/geometry/neighborhood'
+require 'clusta/geometry/directed/neighborhood'
+require 'clusta/geometry/neighbor'
+require 'clusta/geometry/directed/neighbor'
+require 'clusta/geometry/degree_pair'
+require 'clusta/geometry/directed/degree_pair'
+
 module Clusta
 
   module Transforms

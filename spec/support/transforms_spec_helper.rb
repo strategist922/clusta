@@ -35,8 +35,12 @@ module Clusta
         @options[:with] or raise SpecError.new("Must supply a transformation name with the :with option.")
       end
 
+      def args
+        @options[:args] || ''
+      end
+
       def command
-        "#{clusta_bin} --run=local --transform=#{transform_name} --run=local #{@path} -"
+        "#{clusta_bin} --run=local --transform=#{transform_name} #{args} #{@path} -"
       end
 
       def output

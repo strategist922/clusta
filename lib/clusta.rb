@@ -14,11 +14,16 @@ module Clusta
     File.basename(path).gsub(/\.rb$/, '')
   end
 
+  def self.require_path path
+    File.join(File.dirname(path), File.basename(path).gsub(/\.rb$/, ''))
+  end
+  
   Error                     = Class.new(StandardError)
   DirectednessMismatchError = Class.new(Error)
   AmbiguousArgumentsError   = Class.new(Error)
 
   autoload :Geometry,   'clusta/geometry'
   autoload :Transforms, 'clusta/transforms'
+  autoload :Runner,     'clusta/runner'
   
 end

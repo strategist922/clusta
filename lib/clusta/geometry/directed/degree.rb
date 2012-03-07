@@ -3,6 +3,8 @@ module Clusta
     
     class DirectedDegree < Element
 
+      abbreviate 'DD'
+
       field :vertex_label
       field :in_degree,   :type => :int
       field :out_degree,  :type => :int

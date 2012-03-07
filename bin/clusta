@@ -4,32 +4,5 @@ $: << File.expand_path('../lib', File.dirname(__FILE__)) unless $:.include?(File
 
 require 'clusta'
 
-def usage
-  "usage: #{File.basename(__FILE__)} --transform=TRANSFORM_NAME [ARGS ...]"
-end
+Clusta::Runner.new(File.basename(__FILE__), ARGV.dup).run! if $0 == __FILE__
 
-def extract_transform_arg
-  transform_arg = ARGV.find_all { |arg| arg =~ Clusta::Transforms::ARG_REGEXP }.first
-  if transform_arg.nil?
-    $stderr.puts(usage)
-    exit(1)
-  end
-  # ARGV.delete_if { |arg| arg =~ Clusta::Transforms::ARG_REGEXP }
-  transform_arg
-end
-
-def add_default_run_arg
-  ARGV.unshift('--run=local') unless ARGV.detect { |arg| arg =~ /--run/ }
-end
-
-if $0 == __FILE__
-  begin
-    add_default_run_arg
-    transform = Clusta::Transforms.from_arg(extract_transform_arg)
-    script    = Clusta::Transforms.script_for(transform)
-    script.run
-  rescue Clusta::Error => e
-    $stderr.puts e.message
-    exit(1)
-  end
-end

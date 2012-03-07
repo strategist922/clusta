@@ -3,6 +3,8 @@ module Clusta
 
     class Edge < Element
 
+      abbreviate 'E'
+
       field :source_label
       field :target_label
       field :weight,      :optional => true

@@ -1,3 +1,8 @@
+require 'clusta/geometry/edge'
+require 'clusta/geometry/directed/edge'
+require 'clusta/geometry/degree'
+require 'clusta/geometry/directed/degree'
+
 module Clusta
 
   module Transforms

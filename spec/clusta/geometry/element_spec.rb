@@ -4,6 +4,10 @@ describe Clusta::Geometry::Element do
 
   describe "setting inheritable fields" do
 
+    before do
+      Wukong::RESOURCE_CLASS_MAP.clear
+    end
+
     it "should not define any fields of its own" do
       Clusta::Geometry::Element.fields.should == []
     end
@@ -140,49 +144,52 @@ describe Clusta::Geometry::Element do
 
   describe "embedded geometry elements" do
 
+    before do
+      @parent = Class.new(Clusta::Geometry::Element)
+      
+      @parent.field      :foo
+      @parent.field      :child, :type => :geometry
+
+      @child = Class.new(Clusta::Geometry::Element)
+      @child.field :bar
+      @child.field :baz
+
+      # We have to do this manually b/c the class is not set to a
+      # constant.
+      @child.set_stream_name 'Child'
+      Clusta::Geometry.register_element(@child, 'Child')
+    end
+
     it "should be able to instantiate embedded elements when named as fields" do
-      parent = Class.new(Clusta::Geometry::Element)
-      
-      parent.field :foo
-      parent.field :child, :type => :geometry
-      
-      instance = parent.new("foovalue", "Edge;1;2")
+      instance = @parent.new("foovalue", "Child;1;2")
       instance.foo.should == 'foovalue'
-      instance.child.source_label.should == '1'
-      instance.child.target_label.should == '2'
+      instance.child.bar.should == '1'
+      instance.child.baz.should == '2'
     end
 
     it "should be able to serialize embedded elements when named as fields" do
-      parent = Class.new(Clusta::Geometry::Element)
-      
-      parent.field :foo
-      parent.field :child, :type => :geometry
-
-      instance = parent.new('foovalue', Clusta::Geometry::Edge.new('1', '2'))
-      instance.to_flat.should include('foovalue', 'Edge;1;2')
+      instance = @parent.new('foovalue', @child.new('1', '2'))
+      instance.to_flat.should include('foovalue', "Child;1;2")
     end
 
     it "should be able to instantiate embedded elements when given as input fields" do
-      parent = Class.new(Clusta::Geometry::Element)
-      
-      parent.field :foo
-      instance = parent.new("foovalue", "Edge;1;2", "Edge;3;4")
+      instance = @parent.new("foovalue", "Child;1;2", "Child;3;4")
       
       instance.foo.should == 'foovalue'
       
-      instance.input_fields.size.should == 2
-      instance.input_fields[0].source_label.should == '1'
-      instance.input_fields[0].target_label.should == '2'
-      instance.input_fields[1].source_label.should == '3'
-      instance.input_fields[1].target_label.should == '4'
+      instance.child.class.should == @child
+      instance.child.bar.should == '1'
+      instance.child.baz.should == '2'
+
+      instance.input_fields.size.should == 1
+      instance.input_fields[0].class.should == @child
+      instance.input_fields[0].bar.should == '3'
+      instance.input_fields[0].baz.should == '4'
     end
 
     it "should be able to serialize embedded elements when given as input fields" do
-      parent = Class.new(Clusta::Geometry::Element)
-      
-      parent.field :foo
-      instance = parent.new('foovalue', Clusta::Geometry::Edge.new('1','2'), Clusta::Geometry::Edge.new('3','4'))
-      instance.to_flat.should include('foovalue', 'Edge;1;2')
+      instance = @parent.new('foovalue', @child.new('1','2'), @child.new('3','4'))
+      instance.to_flat.should include('foovalue', "Child;1;2")
     end
     
   end

@@ -1,3 +1,7 @@
+require 'clusta/geometry/degree_pair'
+require 'clusta/geometry/directed/degree_pair'
+require 'clusta/geometry/assortativity'
+
 module Clusta
 
   module Transforms

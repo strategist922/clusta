@@ -2,6 +2,8 @@ module Clusta
   module Geometry
     
     class DirectedEdge < Edge
+
+      abbreviate 'DE'
       
       def directed?
         true
