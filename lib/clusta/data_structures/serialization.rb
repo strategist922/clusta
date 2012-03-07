@@ -13,19 +13,22 @@ module Clusta
         self.class.stream_name
       end
 
+      def suffix index
+        case index.to_s
+        when /1$/ then 'st'
+        when /2$/ then 'nd'
+        when /3$/ then 'rd'
+        else 'th'
+        end
+      end
+
       def process_args *args
         self.class.fields.each_with_index do |field, index|
-          suffix = case index.to_s
-                   when /1$/ then 'st'
-                   when /2$/ then 'nd'
-                   when /3$/ then 'rd'
-                   else 'th'
-                   end
           case
           when field[:optional]
             self.send("#{field[:name]}=", args[index]) if args[index]
           when args[index].nil?
-            raise ArgumentError.new("A #{self.class} requires a non-nil value for #{field[:name]} as its #{index}#{suffix} argument.")
+            raise ArgumentError.new("A #{self.class} requires a non-nil value for #{field[:name]} as its #{index}#{suffix(index)} argument.")
           else
             self.send("#{field[:name]}=", args[index])
           end
