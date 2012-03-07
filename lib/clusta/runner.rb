@@ -2,8 +2,9 @@ require 'configliere'
 
 Settings.use :commandline
 
-Settings.define :transform,   :description => "The name of the tranformation to run.", :required => true
-Settings.define :class_names, :description => "The output format for class names, one of: 'long', 'medium', or 'short'.", :default => 'medium'
+Settings.define :transform,   :description => "The name of the tranformation to run.",                                    :required => true
+Settings.define :class_names, :description => "The output format for class names, one of: 'long', 'medium', or 'short'.", :required => true, :default => 'medium'
+Settings.define :serialize,   :description => "The serialization format for data, one of: 'json' or 'tsv'.",              :required => true, :default => 'tsv'
 
 module Clusta
   

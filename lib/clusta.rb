@@ -21,9 +21,11 @@ module Clusta
   Error                     = Class.new(StandardError)
   DirectednessMismatchError = Class.new(Error)
   AmbiguousArgumentsError   = Class.new(Error)
+  NotImplementedError       = Class.new(Error)
 
-  autoload :Geometry,   'clusta/geometry'
-  autoload :Transforms, 'clusta/transforms'
-  autoload :Runner,     'clusta/runner'
-  
+  autoload :Geometry,      'clusta/geometry'
+  autoload :Transforms,    'clusta/transforms'
+  autoload :Runner,        'clusta/runner'
+  autoload :Schema,        'clusta/schema'
+  autoload :Serialization, 'clusta/serialization'
 end

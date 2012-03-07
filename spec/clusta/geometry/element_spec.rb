@@ -92,7 +92,7 @@ describe Clusta::Geometry::Element do
 
     it "should accept additional fields by default" do
       instance = Clusta::Geometry::Element.new("foo", "bar", "baz")
-      instance.input_fields.should include("foo", "bar", "baz")
+      instance.extra_inputs.should include("foo", "bar", "baz")
     end
 
     it "should serialize additional fields properly" do
@@ -105,7 +105,7 @@ describe Clusta::Geometry::Element do
       wrapper.field :foo
       instance = wrapper.new("foovalue", "bar", "baz")
       instance.foo.should == "foovalue"
-      instance.input_fields.should include("bar", "baz")
+      instance.extra_inputs.should include("bar", "baz")
     end
 
     it "should serialize additional fields on a subclass properly" do
@@ -115,13 +115,13 @@ describe Clusta::Geometry::Element do
       instance.to_flat.should include("foovalue", "bar", "baz")
     end
 
-    it "should allow a subclass to alias input_fields" do
+    it "should allow a subclass to alias extra_inputs" do
       wrapper = Class.new(Clusta::Geometry::Element)
       wrapper.field :foo
-      wrapper.input_fields :bar
+      wrapper.extra_inputs :bar
       instance = wrapper.new("foovalue", "bar", "baz")
       instance.foo.should == "foovalue"
-      instance.bar.should == instance.input_fields
+      instance.bar.should == instance.extra_inputs
     end
 
     it "should behave sensibly with both an optional field and input fields" do
@@ -132,12 +132,12 @@ describe Clusta::Geometry::Element do
       instance = wrapper.new("foovalue", "barvalue", "extra1", "extra2")
       instance.foo.should == 'foovalue'
       instance.bar.should == 'barvalue'
-      instance.input_fields.should == ['extra1', 'extra2']
+      instance.extra_inputs.should == ['extra1', 'extra2']
 
       instance = wrapper.new("foovalue")
       instance.foo.should == 'foovalue'
       instance.bar.should be_nil
-      instance.input_fields.should be_empty
+      instance.extra_inputs.should be_empty
       
     end
   end
@@ -181,10 +181,10 @@ describe Clusta::Geometry::Element do
       instance.child.bar.should == '1'
       instance.child.baz.should == '2'
 
-      instance.input_fields.size.should == 1
-      instance.input_fields[0].class.should == @child
-      instance.input_fields[0].bar.should == '3'
-      instance.input_fields[0].baz.should == '4'
+      instance.extra_inputs.size.should == 1
+      instance.extra_inputs[0].class.should == @child
+      instance.extra_inputs[0].bar.should == '3'
+      instance.extra_inputs[0].baz.should == '4'
     end
 
     it "should be able to serialize embedded elements when given as input fields" do
