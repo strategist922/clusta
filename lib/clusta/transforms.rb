@@ -2,11 +2,14 @@ module Clusta
 
   module Transforms
 
-    Dir[File.join(File.dirname(__FILE__), "transforms/*.rb")].each do |path|
-      require_name = Clusta.require_name(path)
-      autoload Clusta.classify(require_name), "clusta/transforms/#{require_name}"
+    def self.names
+      @names ||= []
     end
     
+    def self.register_transform name
+      names << name
+    end
+
     def self.from_name name
       begin
         const_get(Clusta.classify(name))
@@ -18,7 +21,22 @@ module Clusta
     def self.script_for transform
       mapper  = transform::Mapper  if defined?(transform::Mapper)
       reducer = transform::Reducer if defined?(transform::Reducer)
-      Wukong::Script.new(mapper, reducer)
+      options = (transform.respond_to?(:options) ? transform.options : {})
+      Wukong::Script.new(mapper, reducer, options)
+    end
+
+    def self.has_mapper?(transform)
+      defined?(transform::Mapper)
+    end
+
+    def self.has_reducer?(transform)
+      defined?(transform::Reducer)
+    end
+
+    Dir[File.join(File.dirname(__FILE__), "transforms/*.rb")].each do |path|
+      require_name = Clusta.require_name(path)
+      autoload Clusta.classify(require_name), "clusta/transforms/#{require_name}"
+      register_transform require_name
     end
     
   end

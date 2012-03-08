@@ -10,7 +10,8 @@ module Clusta
   
   class Runner
 
-    TRANSFORM_ARG_REGEXP = /--transform=[\w\d_]+/
+    TRANSFORM_ARG_REGEXP  = /--transform=[\w\d_]+/
+    TRANSFORM_LIST_REGEXP = /--list-transforms/
 
     def initialize name, argv
       @name = name
@@ -37,6 +38,10 @@ module Clusta
       end
     end
 
+    def list_transforms?
+      @argv.detect { |arg| arg =~ self.class::TRANSFORM_LIST_REGEXP }
+    end
+
     def transform_arg
       @argv.find_all { |arg| arg =~ self.class::TRANSFORM_ARG_REGEXP }.first
     end
@@ -45,22 +50,48 @@ module Clusta
       transform_arg.split('=').last
     end
 
-    def replace_args!
+    def run!
+      begin
+        if list_transforms?
+          list_transforms!
+        else
+          run_transform!
+        end
+      rescue Clusta::Error => e
+        $stderr.puts "ERROR: #{e.message}"
+        exit(1)
+      end
+    end
+
+    def run_transform!
       ensure_named_transform!
       run_local_by_default!
       ARGV.replace(@argv)
       Settings.resolve!
+      
+      transform = Clusta::Transforms.from_name(transform_name)
+      script    = Clusta::Transforms.script_for(transform)
+      script.run
     end
 
-    def run!
-      begin
-        replace_args!
+    def list_transforms!
+      puts "Known transforms:"
+      puts ''
+      Clusta::Transforms.names.sort.each do |transform_name|
         transform = Clusta::Transforms.from_name(transform_name)
-        script    = Clusta::Transforms.script_for(transform)
-        script.run
-      rescue Clusta::Error => e
-        $stderr.puts e.message
-        exit(1)
+        name_suffix = case
+                      when Clusta::Transforms.has_mapper?(transform)     && Clusta::Transforms.has_reducer?(transform)     then ''
+                      when (! Clusta::Transforms.has_mapper?(transform)) && Clusta::Transforms.has_reducer?(transform)     then ' (reduce-only)'
+                      when Clusta::Transforms.has_mapper?(transform)     && (! Clusta::Transforms.has_reducer?(transform)) then ' (map-only)'
+                      when (! Clusta::Transforms.has_mapper?(transform)) && (! Clusta::Transforms.has_reducer?(transform)) then ' (nothing)'
+                      end
+                        
+        puts "  #{transform_name}#{name_suffix}"
+        if transform.respond_to?(:help)
+          puts ''
+          puts "    #{transform.help}"
+        end
+        puts ''
       end
     end
     
