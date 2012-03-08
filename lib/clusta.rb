@@ -19,6 +19,7 @@ module Clusta
   end
   
   Error                     = Class.new(StandardError)
+  ArgumentError             = Class.new(Error)
   DirectednessMismatchError = Class.new(Error)
   AmbiguousArgumentsError   = Class.new(Error)
 
