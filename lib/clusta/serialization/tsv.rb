@@ -5,7 +5,8 @@ module Clusta
       def to_flat
         [stream_name].tap do |record|
           fields.each do |field|
-            value  = send(field[:name])
+            value = send(field[:name])
+            value = value.to_tsv_component if field[:type] == :geometry
             record << value.to_s unless value.nil? && field[:optional]
           end
           record.concat(extra_outputs)
@@ -40,7 +41,17 @@ module Clusta
       def extra_inputs= inputs
         @extra_inputs = inputs.map do |input|
           if input =~ /^[A-Z].*;/
-            self.class.from_string(input)
+            self.class.from_tsv_component_string(input)
+          else
+            input
+          end
+        end
+      end
+
+      def extra_outputs
+        @extra_inputs.map do |input|
+          if input.respond_to?(:to_tsv_component)
+            input.to_tsv_component
           else
             input
           end
@@ -51,6 +62,10 @@ module Clusta
         klass.extend(ClassMethods)
       end
 
+      def to_tsv_component
+        to_flat.join(";")
+      end
+
       module ClassMethods
         
         def from_tsv_component_string string
@@ -58,7 +73,7 @@ module Clusta
           args  = string.split(';')
           klass_name = args.shift
           raise ArgumentError.new("Elements instantiated from a TSV component string must match the format 'klass;[field1;[field2;]...]'") unless klass_name
-          Wukong.class_from_resource(klass_name).new(*args).first
+          Wukong.class_from_resource(klass_name).new(*args)
         end
       end
     end

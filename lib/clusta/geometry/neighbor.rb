@@ -2,7 +2,8 @@ module Clusta
   module Geometry
 
     class Neighbor < Element
-      field :label
+      
+      key   :label
       field :weight, :optional => true
 
       def directed?

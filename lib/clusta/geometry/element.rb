@@ -5,10 +5,11 @@ module Clusta
       
       include Clusta::Schema
       include Clusta::Serialization
-      include Clusta::Serialization::TSV
 
-      def initialize *args
-        process_args(*args)
+      if defined?(Settings) && Settings[:serialize] == 'json'
+        include Clusta::Serialization::JSON
+      else
+        include Clusta::Serialization::TSV
       end
 
       def self.inherited subclass

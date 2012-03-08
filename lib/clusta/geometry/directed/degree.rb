@@ -5,7 +5,7 @@ module Clusta
 
       abbreviate 'DD'
 
-      field :vertex_label
+      key   :vertex_label
       field :in_degree,   :type => :int
       field :out_degree,  :type => :int
       

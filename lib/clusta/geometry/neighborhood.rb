@@ -3,7 +3,7 @@ module Clusta
     
     class Neighborhood < Vertex
       
-      input_fields :neighbors
+      extra_inputs :neighbors
 
       def joins? label
         neighbors.detect { |neighbor| neighbor.label == label }

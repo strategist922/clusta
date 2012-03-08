@@ -2,8 +2,9 @@ module Clusta
   module Geometry
 
     class DirectedDegreePair < Element
-      field :source_label
-      field :target_label
+      
+      key   :source_label
+      key   :target_label
       field :source_in_degree_value,  :type => :int
       field :source_out_degree_value, :type => :int
       field :target_in_degree_value,  :type => :int

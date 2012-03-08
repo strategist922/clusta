@@ -1,10 +1,11 @@
-require 'clusta/serialization/tsv'
-
 module Clusta
 
   # Defines methods that allow a class to (de)serialize itself in a
   # way compatabile with Wukong.
   module Serialization
+
+    autoload :TSV,  'clusta/serialization/tsv'
+    autoload :JSON, 'clusta/serialization/json'
 
     def self.included klass
       klass.extend(ClassMethods)
@@ -14,6 +15,13 @@ module Clusta
       self.class.stream_name
     end
 
+    def initialize *args
+      process_args(*args)
+    end
+
+    def process_args *args
+    end
+    
     module ClassMethods
 
       def set_stream_name string

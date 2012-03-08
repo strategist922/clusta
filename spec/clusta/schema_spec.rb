@@ -13,16 +13,16 @@ describe Clusta::Schema do
 
   it "should allow a subclass to set its own fields without polluting the parent" do
     subclass = Class.new(@root)
-    subclass.field :foo
+    subclass.key :foo
     @root.field_names.should_not include('foo')
     subclass.field_names.should include('foo')
   end
 
   it "should allow a subclass of a subclass to set its own fields without polluting the parent" do
     subclass1 = Class.new(@root)
-    subclass1.field :foo
+    subclass1.key :foo
     subclass2 = Class.new(subclass1)
-    subclass2.field :bar
+    subclass2.key :bar
     
     @root.field_names.should_not include('foo')
     @root.field_names.should_not include('bar')

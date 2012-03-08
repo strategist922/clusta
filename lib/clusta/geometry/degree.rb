@@ -5,7 +5,7 @@ module Clusta
 
       abbreviate 'D'
 
-      field :vertex_label
+      key   :vertex_label
       field :degree, :type => :int
       
       def directed?

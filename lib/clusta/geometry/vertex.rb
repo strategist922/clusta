@@ -5,7 +5,7 @@ module Clusta
 
       abbreviate 'V'
       
-      field :label
+      key :label
     end
     
   end

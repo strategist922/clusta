@@ -5,8 +5,8 @@ module Clusta
 
       abbreviate 'E'
 
-      field :source_label
-      field :target_label
+      key   :source_label
+      key   :target_label
       field :weight,      :optional => true
 
       def weighted?

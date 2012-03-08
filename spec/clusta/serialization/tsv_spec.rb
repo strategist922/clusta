@@ -12,10 +12,10 @@ describe Clusta::Serialization::TSV do
 
   before do
     @root = tsv_serializable_wrapper_class
-    @root.field :foo
+    @root.key :foo
 
     @child = tsv_serializable_wrapper_class
-    @child.field :baz
+    @child.key :baz
 
     @child.set_stream_name 'Child'
   end
@@ -39,7 +39,7 @@ describe Clusta::Serialization::TSV do
       @root.field :bar, :optional => true
       
       instance = @root.new("foovalue")
-      instance.foo.should == "bar"
+      instance.foo.should == "foovalue"
       instance.bar.should == nil
 
       instance = @root.new("foovalue", "barvalue")
@@ -92,7 +92,7 @@ describe Clusta::Serialization::TSV do
       output.size.should == 3
       output[0].should == @root.stream_name
       output[1].should == "foovalue"
-      output[3].should == "barvalue"
+      output[2].should == "barvalue"
     end
     
     it "returns an array including any extra inputs it received as well as optional inputs" do
@@ -108,6 +108,26 @@ describe Clusta::Serialization::TSV do
       instance.bar.should be_nil
       instance.extra_inputs.should be_empty
     end
+
+    it "returns an array with properly serialized geometry fields" do
+      @root.field :bar, :type => :geometry
+      output = @root.new("foovalue", "Child;bazvalue").to_flat
+      output.size.should == 3
+      output[0].should == @root.stream_name
+      output[1].should == "foovalue"
+      output[2].should == "Child;bazvalue"
+    end
+
+    it "returns an array with properly serialized geometry fields when they were given as extra inputs" do
+      output = @root.new("foovalue", "Child;bazvalue").to_flat
+      output.size.should == 3
+      output[0].should == @root.stream_name
+      output[1].should == "foovalue"
+      output[2].should == "Child;bazvalue"
+    end
+    
+    
+    
   end
 
 end
