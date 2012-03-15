@@ -2,60 +2,43 @@ require 'configliere'
 
 Settings.use :commandline
 
-Settings.define :transform,   :description => "The name of the tranformation to run.",                                    :required => true
-Settings.define :class_names, :description => "The output format for class names, one of: 'long', 'medium', or 'short'.", :required => true, :default => 'medium'
-Settings.define :serialize,   :description => "The serialization format for data, one of: 'json' or 'tsv'.",              :required => true, :default => 'tsv'
+Settings.define :transform,       :description => "The name of the tranformation to run.",                                    :required => false
+Settings.define :list_transforms, :description => "List known transformations.",                                              :required => false, :type => :boolean, :default => false
+Settings.define :class_names,     :description => "The output format for class names, one of: 'long', 'medium', or 'short'.", :required => true,  :default => 'medium'
+Settings.define :serialize,       :description => "The serialization format for data, one of: 'json' or 'tsv'.",              :required => true,  :default => 'tsv'
+Settings.define :transforms_path, :description => "A colon-separated list of directories to require transform definitions.",  :required => false, :default => ''
+Settings.define :geometry_path,   :description => "A colon-separated list of directories to require geometry definitions.",   :required => false, :default => ''
 
 module Clusta
   
   class Runner
 
-    TRANSFORM_ARG_REGEXP  = /--transform=[\w\d_]+/
-    TRANSFORM_LIST_REGEXP = /--list-transforms/
+    RUN_ARG_REGEXP = /--run=./
+    
 
     def initialize name, argv
       @name = name
       @argv = argv
     end
 
-    def run_local_by_default!
-      @argv.unshift('--run=local') unless @argv.detect { |arg| arg =~ /--run/ }
-    end
-    
-    def ensure_named_transform!
-      if transform_arg.nil? || transform_name.nil?
-
-        # Just creating this empty script causes the Settings to get
-        # populated with Wukong's usual options.
-        begin
-          Wukong::Script.new(nil, nil)
-          Settings.resolve!
-        rescue RuntimeError => e
-        end
-        
-        Settings.dump_help
-        exit(1)
-      end
-    end
-
-    def list_transforms?
-      @argv.detect { |arg| arg =~ self.class::TRANSFORM_LIST_REGEXP }
-    end
-
-    def transform_arg
-      @argv.find_all { |arg| arg =~ self.class::TRANSFORM_ARG_REGEXP }.first
-    end
-
-    def transform_name
-      transform_arg.split('=').last
-    end
-
     def run!
       begin
-        if list_transforms?
+        Settings.resolve!
+        case
+        when Settings[:list_transforms]
+          load_transforms!
           list_transforms!
-        else
+        when Settings[:list_geometry]
+          load_geometry!
+          list_geometry!
+        when Settings[:transform]
+          load_transforms!
+          load_geometry!
           run_transform!
+        when Settings[:map_command] || Settings[:reduce_command]
+          run_map_reduce!
+        else
+          print_help!
         end
       rescue Clusta::Error => e
         $stderr.puts "ERROR: #{e.message}"
@@ -63,38 +46,67 @@ module Clusta
       end
     end
 
+    def load_transforms!
+      rb_files_within(:transforms_path) do |path|
+        Clusta::Transforms.load_from(path)
+      end
+    end
+
+    def load_geometry!
+      rb_files_within(:geometry_path) do |path|
+        Clusta::Geometry.load_from(path)
+      end
+    end
+
+    def rb_files_within key, &block
+      return if Settings[key].nil? || Settings[key].empty?
+      Settings[key].split(':').each do |dir|
+        expanded = File.expand_path(dir)
+        unless File.directory?(expanded)
+          $stderr.puts("WARNING: #{expanded} is not a directory")
+          next
+        end
+        Dir[File.join(expanded, '*.rb')].each do |path|
+          yield path
+        end
+      end
+    end
+    
+    def list_transforms!
+      puts Clusta::Transforms.listing
+    end
+
+    def list_geometry!
+      puts Clusta::Geometry.listing
+    end
+    
     def run_transform!
-      ensure_named_transform!
-      run_local_by_default!
-      ARGV.replace(@argv)
-      Settings.resolve!
-      
-      transform = Clusta::Transforms.from_name(transform_name)
+      transform = Clusta::Transforms.from_name(Settings[:transform])
+      ::ARGV.replace(@argv)
+      ::ARGV.push('--run=local') unless ARGV.any? { |arg| arg =~ self.class::RUN_ARG_REGEXP }
       script    = Clusta::Transforms.script_for(transform)
       script.run
     end
 
-    def list_transforms!
-      puts "Known transforms:"
-      puts ''
-      Clusta::Transforms.names.sort.each do |transform_name|
-        transform = Clusta::Transforms.from_name(transform_name)
-        name_suffix = case
-                      when Clusta::Transforms.has_mapper?(transform)     && Clusta::Transforms.has_reducer?(transform)     then ''
-                      when (! Clusta::Transforms.has_mapper?(transform)) && Clusta::Transforms.has_reducer?(transform)     then ' (reduce-only)'
-                      when Clusta::Transforms.has_mapper?(transform)     && (! Clusta::Transforms.has_reducer?(transform)) then ' (map-only)'
-                      when (! Clusta::Transforms.has_mapper?(transform)) && (! Clusta::Transforms.has_reducer?(transform)) then ' (nothing)'
-                      end
-                        
-        puts "  #{transform_name}#{name_suffix}"
-        if transform.respond_to?(:help)
-          puts ''
-          puts "    #{transform.help}"
-        end
-        puts ''
+    def run_map_reduce!
+      ::ARGV.replace(@argv)
+      ::ARGV.push('--run=local') unless ARGV.any? { |arg| arg =~ self.class::RUN_ARG_REGEXP }
+      begin
+        s = Wukong::Script.new(nil, nil)
+      rescue RuntimeError => e
+        raise Error.new(e.message)
       end
+      s.run
+    end
+
+    def print_help!
+      begin
+        s = Wukong::Script.new(nil, nil)
+      rescue RuntimeError => e
+        raise Error.new(e.message)
+      end
+      s.run
     end
     
   end
-  
 end

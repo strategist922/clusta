@@ -39,6 +39,34 @@ module Clusta
       autoload Clusta.classify(require_name), "clusta/transforms/#{require_name}"
       register_transform require_name
     end
+
+    def self.listing
+      [].tap do |out|
+        out << "Known transforms:"
+        out << ''
+        names.sort.each do |transform_name|
+          transform = from_name(transform_name)
+          name_suffix = case
+                        when has_mapper?(transform)     && has_reducer?(transform)     then ''
+                        when (! has_mapper?(transform)) && has_reducer?(transform)     then ' (reduce-only)'
+                        when has_mapper?(transform)     && (! has_reducer?(transform)) then ' (map-only)'
+                        when (! has_mapper?(transform)) && (! has_reducer?(transform)) then ' (nothing)'
+                        end
+          
+          out << "  #{transform_name}#{name_suffix}"
+          if transform.respond_to?(:help)
+            out << ''
+            out << "    #{transform.help}"
+          end
+          out <<  ''
+        end
+      end.join("\n")
+    end
+
+    def self.load_from path
+      class_eval(File.read(path), path)
+      register_transform(Clusta.require_name(path))
+    end
     
   end
   
