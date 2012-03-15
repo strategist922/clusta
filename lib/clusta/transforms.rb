@@ -22,7 +22,8 @@ module Clusta
       mapper  = transform::Mapper  if defined?(transform::Mapper)
       reducer = transform::Reducer if defined?(transform::Reducer)
       options = (transform.respond_to?(:options) ? transform.options : {})
-      Wukong::Script.new(mapper, reducer, options)
+      script  = defined?(transform::Script) ? transform::Script : Wukong::Script
+      script.new(mapper, reducer, options)
     end
 
     def self.has_mapper?(transform)
