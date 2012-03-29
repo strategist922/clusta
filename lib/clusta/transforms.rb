@@ -22,8 +22,18 @@ module Clusta
       mapper  = transform::Mapper  if defined?(transform::Mapper)
       reducer = transform::Reducer if defined?(transform::Reducer)
       options = (transform.respond_to?(:options) ? transform.options : {})
-      script  = defined?(transform::Script) ? transform::Script : Wukong::Script
+      script  = defined?(transform::Script) ? transform::Script : default_script
       script.new(mapper, reducer, options)
+    end
+
+    def self.default_script
+      Class.new(Wukong::Script).tap do |c|
+        c.class_eval do
+          def local_mode_sort_commandline
+            "sort -n -k2"
+          end
+        end
+      end
     end
 
     def self.has_mapper?(transform)
